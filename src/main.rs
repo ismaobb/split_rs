@@ -22,12 +22,13 @@ fn main() {
         .duration_since(UNIX_EPOCH)
         .unwrap()
         .as_millis();
-    println!("{}", time);
 
     let output_folder = format!("{time}");
     if !Path::new(&output_folder).exists() {
         fs::create_dir(&output_folder).expect("Failed to create output folder");
     }
+
+    let start = SystemTime::now();
 
     loop {
         let bytes_read = file.read(&mut buffer).expect("Failed to read from file");
@@ -46,5 +47,12 @@ fn main() {
         chunk_count += 1;
     }
 
-    println!("File splitting complete. {} chunks created.", chunk_count);
+    let end = SystemTime::now();
+    let diff = end.duration_since(start).expect("diff timestamp error");
+
+    println!(
+        "File splitting complete. {} chunks created. take {} ms",
+        chunk_count,
+        diff.as_millis()
+    );
 }
